@@ -3,12 +3,12 @@ module Main where
 import Prelude
 
 import Data.Foldable (sum)
-import Data.Int (decimal, floor, toNumber, toStringAs)
+import Data.Int (decimal, toStringAs)
 import Effect (Effect)
 import Effect.Console (log)
 
-dat :: Array Int
-dat = [
+masses :: Array Int
+masses = [
 120588,
 137636,
 114877,
@@ -112,10 +112,13 @@ dat = [
 ]
 
 computeCombustible :: Int -> Int
-computeCombustible masse = floor(toNumber(masse) / toNumber(3) - toNumber(2))
+computeCombustible masse
+  | masse < 6 = 0
+  | otherwise = do
+      let combustible = masse / 3 - 2
+      combustible + computeCombustible(combustible)
 
 main :: Effect Unit
 main = do
-  let combustibles = map computeCombustible dat
-  let sumCombustible = sum combustibles
-  log (toStringAs decimal sumCombustible)
+  let combustibles = sum (map computeCombustible masses)
+  log (toStringAs decimal combustibles)
